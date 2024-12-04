@@ -4,9 +4,9 @@ within_bounds ()
     local diff="$1" increasing="$2"
     if (( increasing ))
     then
-        (( diff < 0 && diff >= -3 ))
-    else
         (( diff > 0 && diff <= 3 ))
+    else
+        (( diff < 0 && diff >= -3 ))
     fi
 }
 
@@ -20,7 +20,7 @@ is_safe ()
     for (( i=1; i<${#nums[@]}; i++ ))
     do
         (( cur = nums[i] ))
-        (( diff = prev - cur ))
+        (( diff = cur - prev ))
         if within_bounds "$diff" "$increasing"
         then
             (( prev = cur ))
