@@ -9,5 +9,5 @@ For day 1, the only external tools I used where
 - `sort`
 - `rm`
 
-I writing a `sort` function in bash is easily doable, and for `mkfifo` and `rm` I have an alternate solution.
+Writing a `sort` function in bash is doable, and for `mkfifo` and `rm` I have an alternate solution.
 So none of them are mandatory. I might modify the solution to day 1 later on.
