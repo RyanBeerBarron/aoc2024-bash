@@ -4,10 +4,14 @@ Doing this year advent of code in bash for the challenge and to consolidate my b
 I will try to keep core utils to a minimum and only use bash builtin functionality.
 So no `awk`, no `grep`, no `sed`.
 
-For day 1, the only external tools I used where 
-- `mkfifo`
-- `sort`
-- `rm`
+## How to run the scripts
 
-Writing a `sort` function in bash is doable, and for `mkfifo` and `rm` I have an alternate solution.
-So none of them are mandatory. I might modify the solution to day 1 later on.
+For each day, the will be a `part1.bash` and `part2.bash` since each problem is divided into two parts
+Also there is a `sample.txt` which is the example from the website and `input.txt` which is the real challenge
+Each script expects the input to be given from stdin, so to run a script, do:
+
+```sh
+$ bash part1.bash <input.txt
+```
+
+If the command to run the script changes for a day, there will be a specific README in there directory of that day

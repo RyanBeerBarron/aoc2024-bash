@@ -1,3 +1,5 @@
+# By using pipes, this solution does a single pass over stdin
+# Beneficial if it was very large
 mkfifo first_col second_col first_col_sorted second_col_sorted
 
 sort -g <first_col >first_col_sorted &
@@ -24,11 +26,17 @@ rm first_col second_col first_col_sorted second_col_sorted
 #################################################
 # Solution without using `mkfifo` and `rm`      #
 # Less elegant but uses less external commands  #
+# Also requires two passes over stdin			#
 #################################################
-
-# input_file="$1"
-# exec 3< <(while read first ignored; do echo $first; done < "$input_file" | sort)
-# exec 4< <(while read ignored second; do echo $second; done < "$input_file" | sort)
+# mapfile MAP
+#
+# function printmap()
+# {
+# 	printf '%s' "${MAP[@]}"
+# }
+#
+# exec 3< <(while read first ignored; do echo $first; done <<< "$(printmap)" | sort)
+# exec 4< <(while read ignored second; do echo $second; done <<< "$(printmap)" | sort)
 #
 # (( total = 0 ))
 # while read -u 3 first && read -u 4 second
