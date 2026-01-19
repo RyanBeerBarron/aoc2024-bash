@@ -128,5 +128,5 @@ My second attempt was even clearer since I used subshells in parallel to each ru
 
 
 -----
-[^1]: Since the map it stored as an array of string, when a direction bitset exceeded the value `1001` (9), the new value would be inserted in the string, but 10 and any number greater than it, is two digit long
-which causes the string to be longer, and results in a new column in my map. This is **really** bad, I **MUST** store all the values with a single char, for a hexadecimal value, that's fine. But if there 5 or more bits in the bitset, I would have needed to find another solution.
+[^1]: The map is stored as an array of string, where each cell is the value of the direction bitset. If the direction bitset exceeds `1001` (9), the new value to be inserted in the string, 10, would cause the string to be longer than it started from. This results in a new column in my map and would shift some of the cells in the modified row.
+This is **really** bad, values **MUST** be stored with a single char. For a hexadecimal value, that's easy enough, but if there 5 or more bits in the bitset, I would have needed another solution...
