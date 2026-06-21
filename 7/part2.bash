@@ -8,80 +8,13 @@
 #
 # This makes it run quite fast (around 25 seconds on 16 cores)
 
+source ../common.bash
+
 # Globals
-LOG_LEVEL=3
+LOG_LEVEL="$LOG_INFO"
 defaultIFS="$IFS"
-((total=0))
-((cores=$(nproc)))
-results=(0 0 0)
-
-exec {stdout}>&1
-
-
-# Inside matrix, each element is a string with each character representing an operation
-# 0 -> '+'
-# 1 -> '*'
-# 2 -> '||' (concatenation)
-# It contains all the permutations that will be needed
-pattern='{0,1,2}'
-function build_matrix ()
-{
-	local count="$1"
-	for ((i=0; i<count; i++)); do
-		str="$str$pattern"
-	done
-	matrix=( $(eval "echo $str") )
-}
-
-
-function log ()
-{
-	local required_level="$1"
-	shift
-	if (( LOG_LEVEL >= required_level)); then datetime=$(date "+%FT%T"); echo "[$datetime] $@" >&"$stdout"; fi
-}
-
-function fatal ()
-{
-	log 0 "@"
-	exit 1
-}
-function error ()
-{
-	log 1 "@"
-
-}
-function warn ()
-{
-	log 2 "@"
-
-}
-function info ()
-{
-	log 3 "$@"
-}
-
-function debug ()
-{
-	log 4 "$@"
-}
-
-function trace ()
-{
-	log 5 "@"
-}
-
-function get_operator ()
-{
-	local pow2_j=1 i="$1" j="$2" bitwise_and
-	(( pow2_j = 1 << j ))
-	(( bitwise_and = i & pow2_j ))
-	debug "i=$i, j=$j, pow2_j=$pow2_j, bitwise_and=$bitwise_and"
-	case "$bitwise_and" in
-	0) echo "add" ;;
-	*) echo "multiply" ;;
-	esac
-}
+total=0
+cores=$(nproc)
 
 function check_sum ()
 {
@@ -98,17 +31,16 @@ function check_sum ()
 	return 1
 }
 
-function worker ()
+function process_equations ()
 {
-	local pid="$1" total target base size
+	local total=0 target base size
 	declare -a numbers
-	((total=0))
 	for (( i="$pid"; i < "${#file[@]}"; i+=cores)); do
 		line="${file[i]}"
 		set -- $line
 		target="${1%:*}"
 		base="$2"
-		info "process $pid: on line $i, checking target=$target"
+		log_info "on line $i, checking target=$target"
 		shift 2
 		numbers=()
 		for num; do numbers+=("$num"); done
@@ -116,41 +48,29 @@ function worker ()
 		check_sum "$target" "$base" 0;
 		return_code=$?
 		if (( return_code == 0)); then
-			debug "process $pid: adding target=$target to total=$total, new total=$((total + target))";
+			log_debug "adding target=$target to total=$total, new total=$((total + target))";
 			(( total += target ));
 		fi
-		info "process $pid: done with line $i, return code=$return_code"
+		log_info "done with line $i, return code=$return_code"
 	done
-	info "process $pid: Done, total=$total"
+	log_info "Done, total=$total"
 	echo "$total" >&"$result_fd"
 }
 
-read -rd '' file
-debug "read file"
-exec {stream_file}<<<"$file"
-file=()
-while read -u "$stream_file" line; do set -- $line; file+=("$#: $*"); done
-debug "built array with number of args"
-IFS=$'\n'; file="${file[*]}"; IFS="$defaultIFS"
-debug "joined array"
-file=$(sort --field-separator ':' -k 1gr,1gr <<<"$file")
-debug "sorted file from hardest to easiest"
+exec {add_length_fd}< <(while read line; do set -- $line; echo "$#: $*"; done)
+exec {sort_length_fd}< <(sort --field-separator ':' -k 1gr,1gr <&"$add_length_fd")
+exec {final_file_fd}< <(while read -u "$sort_length_fd" line; do echo "${line#*: }"; done)
 (( line_count=0 ))
-exec {stream_file}<<<"$file"
-# array that holds all the row that each subprocess will work on
 file=()
-while read -u "$stream_file" line; do
+while read -u "$final_file_fd" line; do
 	((line_count++))
-	line="${line#*: }"
 	file+=("$line")
 done
-debug "final array in order built"
+log_debug "final array, in order, built. Total lines=$line_count"
 
 result_file=$(mktemp)
 exec {result_fd}>"$result_file"
-for ((i=0; i<cores; i++)); do
-	(worker "$i") &
-done
+run_in_parallel process_equations
 wait
 exec {result_fd}>&-
 exec {result_fd}<"$result_file"

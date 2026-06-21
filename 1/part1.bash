@@ -26,20 +26,19 @@ rm first_col second_col first_col_sorted second_col_sorted
 #################################################
 # Solution without using `mkfifo` and `rm`      #
 # Less elegant but uses less external commands  #
-# Also requires two passes over stdin			#
+# Also requires to buffer all of stdin		#
 #################################################
-# mapfile MAP
+# source ../common.bash
+# LOG_LEVEL="$LOG_ERROR"
 #
-# function printmap()
-# {
-# 	printf '%s' "${MAP[@]}"
-# }
+# read -rd '' file
+# log_debug "file: '$file'"
 #
-# exec 3< <(while read first ignored; do echo $first; done <<< "$(printmap)" | sort)
-# exec 4< <(while read ignored second; do echo $second; done <<< "$(printmap)" | sort)
+# exec {first_col}< <(while read first ignored; do echo $first; done <<< "$file" | sort)
+# exec {second_col}< <(while read ignored second; do echo $second; done <<< "$file" | sort)
 #
 # (( total = 0 ))
-# while read -u 3 first && read -u 4 second
+# while read -u "$first_col" first && read -u "$second_col" second
 # do
 #     (( diff = first - second ))
 #     (( diff = diff < 0 ? -diff : diff ))
@@ -47,5 +46,5 @@ rm first_col second_col first_col_sorted second_col_sorted
 # done
 # echo "$total"
 #
-# exec 3<&-
-# exec 4<&-
+# exec {first_col}<&-
+# exec {second_col}<&-

@@ -5,27 +5,15 @@
 #
 # Test if there is at least one combination of operators
 # for 'base' and 'numbers' list that will compute to 'total'
-LOG_LEVEL=1
 
-exec 3>&1
-
-function info ()
-{
-	if (( LOG_LEVEL >= 1 )); then echo "$@" >&3; fi
-}
-
-function debug ()
-{
-	if (( LOG_LEVEL >= 2 )); then echo "$@" >&3; fi
-}
-
+source ../common.bash
 
 function get_operator ()
 {
 	local pow2_j=1 i="$1" j="$2" bitwise_and
 	(( pow2_j = 1 << j ))
 	(( bitwise_and = i & pow2_j ))
-	debug "i=$i, j=$j, pow2_j=$pow2_j, bitwise_and=$bitwise_and"
+	log_debug "i=$i, j=$j, pow2_j=$pow2_j, bitwise_and=$bitwise_and"
 	case "$bitwise_and" in
 	0) echo "add" ;;
 	*) echo "multiply" ;;
@@ -52,7 +40,7 @@ function check_sum ()
 			return 0
 		fi
 	done
-	debug "size=$size, max_combination=$max_combination"
+	log_debug "size=$size, max_combination=$max_combination"
 	return 1
 }
 
@@ -66,10 +54,10 @@ while read line; do
 	shift 2
 	numbers=()
 	for num; do numbers+=("$num"); done
-	debug "total=$total, base=$base, numbers=${numbers[@]}"
+	log_debug "total=$total, base=$base, numbers=${numbers[@]}"
 	numbers_count=${#numbers[@]}
 	(( cardinality = numbers_count * ( 1 << numbers_count) ))
-	info "line number=$line_count cardinality=$cardinality"
+	log_info "line number=$line_count cardinality=$cardinality"
 	if check_sum; then
 		(( result += total))
 	fi

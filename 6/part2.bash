@@ -39,7 +39,6 @@ function printmap()
 		len=${#line}
 		for ((x = 0; x < len; x++)); do
 			char=${line:x:1}
-			# echo "x=$x y=$y CUR_X=$CUR_X CUR_Y=$CUR_Y"
 			if ((x == CUR_X && y == CUR_Y)); then
 				printf '\033[44m%c\033[0m ' "$char"
 			elif ((x == outer_next_x && y == outer_next_y)); then
@@ -88,6 +87,7 @@ function set_char()
 	eval "$1='$string'"
 }
 
+# Find starting position and direction of the guard
 function find_pos()
 {
 	for ((i = 0; i < ${#MAP[@]}; i++)); do
@@ -124,13 +124,11 @@ function set_velocity()
 
 function advance()
 {
-	# if bitwise AND returns true, we already walked on current square with current DIRECTION
-	# echo "CUR=$CUR DIRECTION=$DIRECTION"
+	# if bitwise 'and' returns true, we already walked on current square with current DIRECTION
 	if ((0x${CUR} & DIRECTION)); then
-		log "loop"
 		return 1
 	fi
-	if [[ "$NEXT" =~ ^[0-9a-f]+$ ]]; then
+	if [[ "$NEXT" = [0-9a-f] ]]; then
 		step
 	else
 		turn
@@ -263,7 +261,7 @@ function test_obstructions()
 	# Array of coordinates to place an obstruction at
 	mapfile -t candidates <"$cachefile"
 	# Test each obstruction for an infinite loop in parallel
-	# Use a subshell for each cpu core (from nproc)
+	# Use a subshell for each logical core (from nproc)
 	# Start the n subprocess immediately
 	# Then after each one is done, start a new one
 	#

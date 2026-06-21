@@ -1,14 +1,26 @@
+source ../common.bash
+LOG_LEVEL="$LOG_TRACE"
 declare -A count=()
-mapfile MAP
+read -rd '' file
 
-exec 3< <(printf '%s' "${MAP[@]}")
-while read -u 3 first second; do
+while read ignored second; do
 	((count[$second]++))
-done
+done <<<"$file"
+
+if ((LOG_LEVEL == LOG_TRACE)); then
+	for key in "${!count[@]}"; do
+		val="${count[$key]}"
+		log_trace "count[$key]=$val"
+	done
+fi
 
 ((total = 0))
-exec 3< <(printf '%s' "${MAP[@]}")
-while read -u 3 first second; do
+while read first second; do
+	log_trace \
+		"total=$total," \
+		"first=$first," \
+		"count[first]=${count[$first]:-0}," \
+		"first*count=$((first * count[$first]))"
 	((total += first * count[$first]))
-done
+done <<<"$file"
 echo "$total"

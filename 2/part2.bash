@@ -1,14 +1,7 @@
+source ../common.bash
+LOG_LEVEL="$LOG_DEBUG"
 INCREASING=1
-DECREASING=0
-
-function within_bounds()
-{
-	if ((gradient == INCREASING)); then
-		((diff > 0 && diff <= 3))
-	else
-		((diff < 0 && diff >= -3))
-	fi
-}
+DECREASING=-1
 
 function is_safe()
 {
@@ -20,25 +13,28 @@ function is_safe()
 	for ((i = 1; i < ${#nums[@]}; i++)); do
 		((cur = nums[i]))
 		((diff = cur - prev))
-		if within_bounds; then
+		((diff *= gradient))
+		if ((diff > 0 && diff <= 3)); then
 			((prev = cur))
 		else
-			if ! ((dampened)); then
-				is_safe "${nums[*]:0:i} ${nums[*]:i+1}" "$gradient" 1 \
-					|| is_safe "${nums[*]:0:i-1} ${nums[*]:i}" "$gradient" 1
-				return $?
-			else
-				return 1
+			local code=1
+			if test "$dampened" = "false"; then
+				is_safe "${nums[*]:0:i} ${nums[*]:i+1}" "$gradient" "true" \
+					|| is_safe "${nums[*]:0:i-1} ${nums[*]:i}" "$gradient" "true"
+				code="$?"
 			fi
+			return "$code"
 		fi
 	done
 	return 0
 }
 
-let safe=0
+((safe=0, line_count=1))
 while read line; do
-	if is_safe "$line" 1 0 || is_safe "$line" 0 0; then
-		((safe++))
+	if is_safe "$line" "$INCREASING" "false" || is_safe "$line" "$DECREASING" "false";
+		then log_debug "line $line_count is safe"; ((safe++))
+		else log_debug "line $line_count is not safe"
 	fi
+	((line_count++))
 done
 echo $safe

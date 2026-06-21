@@ -3,6 +3,8 @@
 # It removes everything all the string of the form "don't().*do()"
 # And inversely, it keeps the content of every string in the form "do().*don't()"
 
+source ../common.bash
+LOG_LEVEL="$LOG_DEBUG"
 read -rd '' input
 cleaned_input=""
 ((do = 1))
@@ -12,7 +14,9 @@ while true; do
 		# Take everything up to it in the cleaned input
 		# And advance up to that point
 		if test "$input" != "${input#*don\'t()}"; then
-			cleaned_input="${cleaned_input}${input%%don\'t()*}"
+			to_append="${input%%don\'t()*}"
+			log_debug "appending to cleaned_input: $to_append"
+			cleaned_input="${cleaned_input}${to_append}"
 			input="${input#*don\'t()}"
 			((do = 0))
 		else
@@ -22,8 +26,10 @@ while true; do
 			break
 		fi
 	else
-		# The 'mul()' are deactivated here, so ignore the input unti the next 'do()'
+		# The 'mul()' are deactivated here, so ignore the input until the next 'do()'
 		if test "$input" != "${input#*do()}"; then
+			to_throw="${input%%do()*}"
+			log_debug "throwing out from input: $to_throw"
 			input="${input#*do()}"
 			((do = 1))
 		else
