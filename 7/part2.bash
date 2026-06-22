@@ -1,10 +1,12 @@
-# To try every operator, could build a 2d matrice. instead of whatever im doing now
+# Instead of using recursion to generate every matrix and trying all of them, which is slow
+# I saw online to directly use recursion at each step.
+#   to solve 10: 2 3 5
+#       you do      '2+3=5' '10-5=5', now try to solve:      5: 5
+#       and you do  '2*3=6' '10-6=4', now try to solve:  4: 5
+# And with guards to stop as soon as the running total is greater than the target, it completely cuts entire subtree of the recursion
+# and as soon as one recursion leaf node has a total equal to the target, also short circuit the entire function and return
 #
-# Load entire file in memory.
-# Sort each row by how hard to compute, from hardest to easiest, then start each process, each skipping 'n core' rows each iteration
-#
-# Test if there is at least one combination of operators
-# for 'base' and 'numbers' list that will compute to 'total'
+# This makes it run quite fast (around 25 seconds on 16 cores)
 
 # Globals
 LOG_LEVEL=3
