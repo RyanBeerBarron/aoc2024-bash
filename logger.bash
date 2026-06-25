@@ -1,3 +1,20 @@
+# Logger library in bash
+# Makes a copy of stdout to keep logging even with command/process substitution and other redirections.
+#
+# Provides log_<level> function for each log type
+# and LOG_<LEVEL> constants to define the logging level
+#
+# `LOG_LEVEL` is a mutable global variable to communicate LOG_LEVEL
+#
+# Usage:
+# ```
+# source logger.bash
+# LOG_LEVEL="$LOG_WARN"
+#
+# log_info "foo bar" # Nothing logged
+# log_warn "foo bar" # This is logged
+# ```
+
 exec {log_output}>&1
 
 LOG_OFF=-1
