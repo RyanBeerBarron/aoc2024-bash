@@ -14,7 +14,6 @@ source ../common.bash
 : ${LOG_LEVEL:="$LOG_INFO"}
 defaultIFS="$IFS"
 total=0
-cores=$(nproc)
 
 function check_sum ()
 {
