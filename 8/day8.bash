@@ -7,7 +7,7 @@ declare -A antinodes=()
 
 PART="$1"
 
-build_map
+build_matrix
 
 function save_antenna_position ()
 {
