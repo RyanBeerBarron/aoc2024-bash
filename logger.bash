@@ -28,15 +28,16 @@ function __log ()
 {
 	local required_level="$1" color="$2" level_label="$3"
 	local pid_label
+	local funcname=${FUNCNAME[2]} sourcename=${BASH_SOURCE[2]} line=${BASH_LINENO[1]}
 	shift 3
 	if (( LOG_LEVEL >= required_level)); then
 		datetime=$(date "+%FT%T")
 
-		if test -n "$pid";
+		if test -n "${pid:-}";
 			then pid_label="pid:$pid";
 			else pid_label="main"
 		fi
-		printf '%b%-7s %-21s %-8s %s%b\n' "$color" "[$level_label]" "[$datetime]" "[$pid_label]" "$*" "\033[0m" >&"$log_output"
+		printf '%b%-6s| %-20s| %-7s| %s| %b%b\n' "$color" "$level_label" "$datetime" "$pid_label" "$sourcename:$funcname:$line" "$*" "\033[0m" >&"$log_output"
 	fi
 }
 
