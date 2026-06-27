@@ -1,0 +1,46 @@
+source logger.bash
+: ${LOG_LEVEL:="$LOG_INFO"}
+shopt -s extglob
+
+function verify_day ()
+{
+	local answer1 answer2 val1 val2 sample1 sample2
+	if ! test -r "sample_answers.txt"; then return 2; fi
+	# variable assignment does not do pathname expansion
+	# when using those variable, do not quote them.
+	sample1=sample?(1).txt
+	sample2=sample?(2).txt
+	read answer1 answer2 <"sample_answers.txt"
+
+	if test -r part1.bash; then
+		val1=$(LOG_LEVEL=$LOG_OFF bash part1.bash <$sample1)
+		val2=$(LOG_LEVEL=$LOG_OFF bash part2.bash <$sample2)
+	fi
+	if test -r day?.bash; then
+		val1=$(LOG_LEVEL=$LOG_OFF bash day?.bash part1 <$sample1)
+		val2=$(LOG_LEVEL=$LOG_OFF bash day?.bash part2 <$sample2)
+	fi
+	log_debug "Day $dir: val1=$val1 val2=$val2"
+	(( val1 == answer1 && val2 == answer2 ))
+}
+
+log_debug "argc=$# argv=$@"
+((ok=0, total=0))
+for dir in ${@:-+([0-9])}; do
+	log_trace "verifying dir=$dir"
+	if ! test -d "$dir"; then continue; fi
+	((total++))
+	pushd "$dir" >/dev/null 2>&1
+	verify_day
+
+	code=$?
+	case "$code" in
+	0) log_info "Day $dir is valid"; ((ok++)) ;;
+	1) log_error "Day $dir is invalid" ;;
+	2) log_warn "Day $dir does not have a solutions file" ;;
+	*) log_error "Unknown error occured when testing day $dir" ;;
+	esac
+	popd >/dev/null 2>&1
+done
+
+echo "$ok tests passed out of $total total"

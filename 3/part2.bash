@@ -4,7 +4,7 @@
 # And inversely, it keeps the content of every string in the form "do().*don't()"
 
 source ../common.bash
-LOG_LEVEL="$LOG_DEBUG"
+: ${LOG_LEVEL:="$LOG_DEBUG"}
 read -rd '' input
 cleaned_input=""
 ((do = 1))

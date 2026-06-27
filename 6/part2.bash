@@ -1,3 +1,5 @@
+source ../common.bash
+: ${LOG_LEVEL:="$LOG_DEBUG"}
 shopt -s extglob
 
 # Globals
@@ -22,17 +24,11 @@ DIRECTION=''
 dx=0
 dy=0
 
-function log()
-{
-	((DEBUG == 0)) && return
-	echo "$@"
-}
-
 function printmap()
 {
 	test "$DEBUG" = '0' && return
-	log "============"
-	log "thread $num testing obstruction at coord($x,$y):"
+	log_debug "============"
+	log_debug "thread $num testing obstruction at coord($x,$y):"
 	local x y
 	for y in "${!MAP[@]}"; do
 		line=${MAP[y]}
@@ -55,7 +51,7 @@ function printmap()
 		done
 		printf '\n'
 	done
-	log "============"
+	log_debug "============"
 }
 
 function get_cell()
@@ -169,11 +165,11 @@ function finish()
 function log_state()
 {
 	if test "$DEBUG" = '1'; then
-		log "pos is: x=$CUR_X y=$CUR_Y"
-		log "NEXT is: x=$NEXT_X y=$NEXT_Y"
-		log "CUR=$CUR NEXT=$NEXT"
-		log "DIRECTION=$(convert_direction) ($DIRECTION)"
-		log "velocity is: dx=$dx dy=$dy"
+		log_debug "pos is: x=$CUR_X y=$CUR_Y"
+		log_debug "NEXT is: x=$NEXT_X y=$NEXT_Y"
+		log_debug "CUR=$CUR NEXT=$NEXT"
+		log_debug "DIRECTION=$(convert_direction) ($DIRECTION)"
+		log_debug "velocity is: dx=$dx dy=$dy"
 	fi
 }
 
@@ -233,6 +229,7 @@ function find_obstructions()
 		advance
 	done
 	IFS=$'\n'
+	log_debug "${cache[*]}"
 	echo "${cache[*]}"
 }
 
@@ -287,7 +284,7 @@ function test_obstructions()
 		unset 'jobs[$id]'
 		coords=${candidates[$index]}
 		if ((code == 1)); then
-			echo "found loop at coords($coords)"
+			log_info "found loop at coords($coords)"
 			verified_loop+=("$coords")
 		fi
 		if ((i < ${#candidates[@]})); then
@@ -296,8 +293,8 @@ function test_obstructions()
 			((i++))
 		fi
 	done
-	echo "found ${#verified_loop[@]} loops total"
-	echo "${verified_loop[*]}"
+	log_info "found ${#verified_loop[@]} loops total: ${verified_loop[@]}"
+	 echo "${#verified_loop[@]}"
 }
 
 function test_candidate()
@@ -313,9 +310,11 @@ function test_candidate()
 	next_square
 	while in_bounds; do
 		if ! advance; then
+			log_info "found a valid loop for coordinate($x, $y)"
 			return 1
 		fi
 	done
+	log_debug "not a loop for coordinate ($x, $y)"
 	return 0
 }
 
@@ -327,6 +326,9 @@ next_square
 
 log_state
 
+( find_obstructions >cache ; )
+test_obstructions cache
+exit 0
 case "$1" in
 find | test)
 	func="$1"

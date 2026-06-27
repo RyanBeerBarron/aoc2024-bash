@@ -63,4 +63,4 @@ while read line; do
 	fi
 	# exit 0
 done
-echo "result=$result"
+echo "$result"

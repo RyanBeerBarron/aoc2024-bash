@@ -1,6 +1,6 @@
 source ../common.bash
 
-LOG_LEVEL="$LOG_DEBUG"
+: ${LOG_LEVEL:="$LOG_DEBUG"}
 
 declare -A antenna_kind=()
 declare -A antinodes=()

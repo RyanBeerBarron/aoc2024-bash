@@ -11,7 +11,7 @@
 source ../common.bash
 
 # Globals
-LOG_LEVEL="$LOG_INFO"
+: ${LOG_LEVEL:="$LOG_INFO"}
 defaultIFS="$IFS"
 total=0
 cores=$(nproc)
@@ -77,4 +77,4 @@ exec {result_fd}<"$result_file"
 while read -u "$result_fd" subresult; do
 	((total += subresult))
 done
-echo "total=$total"
+echo "$total"

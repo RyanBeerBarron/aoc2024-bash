@@ -1,5 +1,5 @@
 source ../common.bash
-LOG_LEVEL="$LOG_DEBUG"
+: ${LOG_LEVEL:="$LOG_DEBUG"}
 INCREASING=1
 DECREASING=-1
 

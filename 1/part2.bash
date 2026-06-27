@@ -1,5 +1,5 @@
 source ../common.bash
-LOG_LEVEL="$LOG_TRACE"
+: ${LOG_LEVEL:="$LOG_TRACE"}
 declare -A count=()
 read -rd '' file
 

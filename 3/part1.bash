@@ -1,5 +1,5 @@
 source ../common.bash
-LOG_LEVEL="$LOG_DEBUG"
+: ${LOG_LEVEL:="$LOG_DEBUG"}
 total=0
 read -rd '' input
 while test "$input" != "${input#*mul}"; do
