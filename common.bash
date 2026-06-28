@@ -2,6 +2,7 @@ __DIR=$(cd "$( dirname ${BASH_SOURCE[0]} )" && pwd)
 source "$__DIR"/logger.bash
 source "$__DIR"/array.bash
 source "$__DIR"/matrix.bash
+source "$__DIR"/map.bash
 
 cores=$(nproc)
 
