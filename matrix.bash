@@ -39,3 +39,26 @@ function get_cell ()
 	local line=${matrix[i]}
 	cell=${line:j:1}
 }
+
+# @param $1 coord
+# #var[out] neighbors
+function enumerate_neighboring_coord ()
+{
+	local coord="$1"
+	local i=${coord%:*} j=${coord#*:}
+	log_trace "i=$i j=$j"
+	neighbors=()
+	neighbors+=("$((i+1)):$j")
+	neighbors+=("$((i-1)):$j")
+	neighbors+=("$i:$((j+1))")
+	neighbors+=("$i:$((j-1))")
+}
+
+# Split coord into i and j component
+function split_coord ()
+{
+	local coord="$1"
+	local -n target_i="$2" target_j="$3"
+	target_i=${coord%:*}
+	target_j=${coord#*:}
+}

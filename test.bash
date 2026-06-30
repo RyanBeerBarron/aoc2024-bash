@@ -1,4 +1,4 @@
-source logger.bash
+source common.bash
 : ${LOG_LEVEL:="$LOG_INFO"}
 shopt -s extglob
 
@@ -37,9 +37,10 @@ for dir in ${@:-+([0-9])}; do
 	case "$code" in
 	0) log_info "Day $dir is valid"; ((ok++)) ;;
 	1)
-		log_error "Day $dir is invalid"
-		log_error "for part1: expected=$answer1 got $val1"
-		log_error "for part2: expected=$answer2 got $val2"
+		log_error \
+			"Day $dir is invalid. " \
+			"For part1: expected=$answer1 got $val1. " \
+			"For part2: expected=$answer2 got $val2"
 		;;
 	2) log_warn "Day $dir does not have a solutions file" ;;
 	*) log_error "Unknown error occured when testing day $dir" ;;

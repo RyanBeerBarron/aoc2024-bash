@@ -34,7 +34,7 @@ function process_equations ()
 {
 	local total=0 target base size
 	declare -a numbers
-	for (( i="$pid"; i < "${#file[@]}"; i+=cores)); do
+	for (( i="$core"; i < "${#file[@]}"; i+=cores)); do
 		line="${file[i]}"
 		set -- $line
 		target="${1%:*}"

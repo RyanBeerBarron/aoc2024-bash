@@ -16,7 +16,7 @@ function explore_trailhead ()
 {
 	local trailhead i j orig_i orig_j total
 	local -A explored_steps=()
-	for ((n="$pid"; n<${#trailheads[@]}; n+=cores)); do
+	for ((n="$core"; n<${#trailheads[@]}; n+=cores)); do
 		trailhead=${trailheads[n]}
 		i=${trailhead%:*}
 		j=${trailhead#*:}
