@@ -26,9 +26,9 @@ function verify_day ()
 
 log_debug "argc=$# argv=$@"
 ((ok=0, total=0))
-for dir in ${@:-+([0-9])}; do
-	log_trace "verifying dir=$dir"
+for dir in {1..25}; do
 	if ! test -d "$dir"; then continue; fi
+	log_trace "verifying dir=$dir"
 	((total++))
 	pushd "$dir" >/dev/null 2>&1
 	verify_day
