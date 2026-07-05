@@ -20,7 +20,6 @@
 exec {log_output}>&1
 test -t "${log_output}"
 __isatty="$?"
-# echo "__isatty=$__isatty"
 
 LOG_OFF=-1
 LOG_FATAL=0
@@ -36,7 +35,7 @@ function __log ()
 	local core_label source_label footer out
 	local funcname=${FUNCNAME[2]} sourcename=${BASH_SOURCE[2]} line=${BASH_LINENO[1]}
 	shift 3
-	if (( LOG_LEVEL >= required_level)); then
+	if ((LOG_LEVEL >= required_level)); then
 		datetime=$(date "+%FT%T")
 
 		if test -n "${core:-}";
@@ -48,8 +47,8 @@ function __log ()
 			sourcename="$out"
 		fi
 		source_label="$sourcename:$funcname:$line"
-		if ((__isatty == 0 )); then
-			printf -v level_label '%b%b%b%-5s%b' "$BOLD" "$INVERTED" "$color" "$level_label" "$RESET"
+		if ((__isatty == 0)); then
+			printf -v level_label '%b%s%b'  "$INVERTED" "$level_label" "$RESET"; printf -v level_label "%b%b%-13s" "$BOLD" "$color" "$level_label"
 			printf -v datetime '%b%b%-19s%b' "$ITALIC" "$color" "$datetime" "$RESET"
 			printf -v core_label '%b%b%-7s%b' "$ITALIC" "$color" "$core_label" "$RESET"
 			printf -v source_label '%b%s%b' "$UNDERLINE" "$source_label" "$RESET"; printf -v source_label '%b%-40s' "$color" "$source_label"
@@ -65,16 +64,17 @@ function log_fatal ()
 	__log 0 "$RED_FG" "FATAL" "$@"
 	exit 1
 }
+
 function log_error ()
 {
 	__log 1 "$RED_FG" "ERROR" "$@"
-
 }
+
 function log_warn ()
 {
 	__log 2 "$YELLOW_FG" "WARN" "$@"
-
 }
+
 function log_info ()
 {
 	__log 3 "$BLUE_FG" "INFO" "$@"
