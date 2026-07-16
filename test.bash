@@ -4,6 +4,8 @@ shopt -s extglob
 
 function verify_day ()
 {
+	if test -r "test.bash"; then bash test.bash; return; fi
+
 	if ! test -r "sample_answers.txt"; then return 2; fi
 	# variable assignment does not do pathname expansion
 	# when using those variable, do not quote them.
