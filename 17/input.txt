@@ -1,0 +1,22 @@
+Register A: 46187030
+Register B: 0
+Register C: 0
+
+Program:
+2,4 => B = A % 8
+1,5 => B = B ^ 5
+7,5 => C = A / 2^B
+0,3 => A = A / 8
+4,0 => B = B ^ C
+1,6 => B = B ^ 6
+5,5 => output B mod 8
+3,0 => jump to 0 while A != 0
+
+
+B: 3 lowest bit of A, XOR by 5, XOR by (A divided by 2 to the 3 lowest bits of A XOR by 5), XOR by 6
+
+010 = 100 ^ 110
+x = 4
+
+4
+4 = (x ^ 101) ^ (x / 2^(x^101))
